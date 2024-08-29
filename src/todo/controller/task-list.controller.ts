@@ -8,12 +8,16 @@ import { TaskService } from '../service/task.service';
 
 @Controller('task-lists')
 export class TaskListController {
-  constructor (
+  constructor(
     private taskService: TaskService
-  ) {}
-  
+  ) { }
+
   @Post()
   create(@Body() taskListCreateRequest: TaskListCreateRequest) {
-    return this.taskService.createTaskList(taskListCreateRequest)
+    return this.taskService.createTaskList({
+      ...taskListCreateRequest,
+      // 创建人id
+      createById: 1,
+    })
   }
 }

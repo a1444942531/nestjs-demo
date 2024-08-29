@@ -8,8 +8,8 @@ export class TaskService {
     private prisma: PrismaService
   ) { }
 
-  createTaskList(taskListCreateRequest: Prisma.task_listCreateInput) {
-    return this.prisma.task_list.create({
+  createTaskList(taskListCreateRequest: Prisma.TaskListCreateInput) {
+    return this.prisma.taskList.create({
       data: taskListCreateRequest
     })
   }

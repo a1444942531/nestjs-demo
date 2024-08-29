@@ -1,10 +1,11 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
+import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { TOKEN_PREFIX } from '../constant/user.constant';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class RolesGuard implements CanActivate {
   constructor(
     private jwtService: JwtService
   ) {}
@@ -12,27 +13,29 @@ export class AuthGuard implements CanActivate {
   async canActivate(
     context: ExecutionContext,
   ) {
-    const request = context.switchToHttp().getRequest<Request>()
-
+    const alice = GqlExecutionContext.create(context);
     console.log(
-      context.switchToHttp(), "request"
+      "jiaoyan"
     )
-    if(['/tokens', '/users'].includes(request?.url)) {
+
+    const request = GqlExecutionContext.create(context).getContext().req;
+
+    if (['/tokens', '/users'].includes(request.url)) {
       return true
     }
-    
+
     const token = this.extractTokenFromHeader(request)
     try {
       request['user'] = await this.jwtService.verifyAsync(token)
     } catch (error) {
-      throw new UnauthorizedException("非法token")      
+      throw new UnauthorizedException("非法token")
     }
 
     return true;
   }
-
+  
   private extractTokenFromHeader(request: Request) {
-    let [type, token] = request?.headers?.authorization?.split(" ") ?? []
+    let [type, token] = request.headers.authorization?.split(" ") ?? []
     return type == TOKEN_PREFIX ? token : ''
   }
 }

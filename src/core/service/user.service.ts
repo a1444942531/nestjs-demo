@@ -8,8 +8,8 @@ export class UserService {
         private prisma: PrismaService
     ) { }
 
-    async user(userWhereUniqueInput: Prisma.userWhereUniqueInput) {
-        return this.prisma.user.findUnique({
+    async user(userWhereUniqueInput: Prisma.UserWhereUniqueInput) {
+        return await this.prisma.user.findUnique({
             where: userWhereUniqueInput
         })
     }
@@ -17,7 +17,7 @@ export class UserService {
     async selectUserName() {
         let pageNum = 1
         let pageSize = 10
-        
+
         this.prisma.user.findMany({
             // 分页功能
             skip: (pageNum - 1) * pageSize,
@@ -40,7 +40,7 @@ export class UserService {
                     gt: "123",
                     // 大于等于
                     gte: "123",
-                    
+
                 }
             },
             orderBy: {
@@ -62,7 +62,7 @@ export class UserService {
     }
 
     // async create(userCreateRequest: UserCreateDto) {
-    async create(userCreateRequest: Prisma.userCreateInput) {
+    async create(userCreateRequest: Prisma.UserCreateInput) {
         const existedUser = await this.findByUsername(userCreateRequest.username)
         if (existedUser) {
             throw new HttpException("该用户名已被占用", 400)

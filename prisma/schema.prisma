@@ -7,82 +7,72 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model role {
-  id              Int               @id @default(autoincrement())
-  createdTime     DateTime          @default(now()) @db.DateTime(6)
-  updateTime      DateTime          @default(now()) @db.DateTime(6)
-  code            String            @unique(map: "IDX_ee999bb389d7ac0fd967172c41") @db.VarChar(255)
-  label           String            @db.VarChar(255)
-  user_roles_role user_roles_role[]
+generator nestgraphql {
+  provider          = "node node_modules/prisma-nestjs-graphql"
+  output            = "../src/prisma-model-graphql"
+  outputFilePattern = "/{type}/{name}.{type}.ts"
 }
 
-model task {
-  id                         Int         @id @default(autoincrement())
-  createdTime                DateTime    @default(now()) @db.DateTime(6)
-  updateTime                 DateTime    @default(now()) @db.DateTime(6)
-  name                       String      @db.VarChar(255)
-  status                     task_status @default(TO_DO)
-  createById                 Int?
-  updateById                 Int?
-  taskListId                 Int?
-  user_task_createByIdTouser user?       @relation("task_createByIdTouser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_39dafe2c8fe18f836ac3bc3767b")
-  task_list                  task_list?  @relation(fields: [taskListId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_47fc40cc98de35bf7aaaaaeeac5")
-  user_task_updateByIdTouser user?       @relation("task_updateByIdTouser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_79d7c49ea9effa62dc8f2116d5a")
-
-  @@index([createById], map: "FK_39dafe2c8fe18f836ac3bc3767b")
-  @@index([taskListId], map: "FK_47fc40cc98de35bf7aaaaaeeac5")
-  @@index([updateById], map: "FK_79d7c49ea9effa62dc8f2116d5a")
+model User {
+  id                Int             @id @default(autoincrement())
+  createdTime       DateTime        @default(now()) /// 创建时间
+  updateTime        DateTime        @default(now())
+  username          String          @unique
+  encryptedPassword String
+  locked            Int             @default(1)
+  enabled           Int             @default(0)
+  userRolesRole     UserRolesRole[]
 }
 
-model task_list {
-  id                              Int              @id @default(autoincrement())
-  createdTime                     DateTime         @default(now()) @db.DateTime(6)
-  updateTime                      DateTime         @default(now()) @db.DateTime(6)
-  createById                      Int?
-  updateById                      Int?
-  status                          task_list_status @default(ACTIVE)
-  name                            String           @db.VarChar(255)
-  task                            task[]
-  user_task_list_updateByIdTouser user?            @relation("task_list_updateByIdTouser", fields: [updateById], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_55bea4c2f5e9e5352ffa4fa5f6e")
-  user_task_list_createByIdTouser user?            @relation("task_list_createByIdTouser", fields: [createById], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_c15a769d194e4772facc7ed7c7d")
-
-  @@index([updateById], map: "FK_55bea4c2f5e9e5352ffa4fa5f6e")
-  @@index([createById], map: "FK_c15a769d194e4772facc7ed7c7d")
+model UserRolesRole {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  roleId Int
+  user   User @relation(fields: [userId], references: [id])
+  Role   Role @relation(fields: [roleId], references: [id])
 }
 
-model user {
-  id                                   Int               @id @default(autoincrement())
-  createdTime                          DateTime          @default(now()) @db.DateTime(6)
-  updateTime                           DateTime          @default(now()) @db.DateTime(6)
-  username                             String            @unique(map: "IDX_78a916df40e02a9deb1c4b75ed") @db.VarChar(255)
-  encryptedPassword                    String            @db.VarChar(255)
-  locked                               Int               @default(0) @db.TinyInt
-  enabled                              Int               @default(1) @db.TinyInt
-  task_task_createByIdTouser           task[]            @relation("task_createByIdTouser")
-  task_task_updateByIdTouser           task[]            @relation("task_updateByIdTouser")
-  task_list_task_list_updateByIdTouser task_list[]       @relation("task_list_updateByIdTouser")
-  task_list_task_list_createByIdTouser task_list[]       @relation("task_list_createByIdTouser")
-  user_roles_role                      user_roles_role[]
+model Role {
+  id            Int             @id @default(autoincrement())
+  createdTime   DateTime        @default(now())
+  updateTime    DateTime        @default(now())
+  code          String
+  label         String
+  userRolesRole UserRolesRole[]
 }
 
-model user_roles_role {
-  user_id Int
-  role_id Int
-  user    user @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "FK_09d115a69b6014d324d592f9c42")
-  role    role @relation(fields: [role_id], references: [id], onDelete: Cascade, map: "FK_0e2f5483d5e8d52043f97634538")
-
-  @@id([user_id, role_id])
-  @@index([user_id], map: "IDX_09d115a69b6014d324d592f9c4")
-  @@index([role_id], map: "IDX_0e2f5483d5e8d52043f9763453")
+model Task {
+  id         Int        @id @default(autoincrement())
+  createTime DateTime   @default(now())
+  updateTime DateTime   @default(now())
+  name       String
+  status     TaskStatus @default(TO_DO)
+  createById Int
+  updateById Int?
+  TaskList   TaskList?  @relation(fields: [taskListId], references: [id])
+  taskListId Int?
 }
 
-enum task_status {
+model TaskList {
+  id          Int            @id @default(autoincrement())
+  createdTime DateTime       @default(now())
+  updateTime  DateTime       @default(now())
+  createById  Int
+  updateById  Int?
+  status      TaskListStatus @default(ACTIVE)
+  name        String
+  task        Task[]
+}
+
+enum TaskStatus {
   TO_DO
   DOING
   DONE
+
+  @@map("task_status")
 }
 
-enum task_list_status {
+enum TaskListStatus {
   CLOSE
   ACTIVE
 }

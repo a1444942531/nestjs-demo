@@ -71,3 +71,15 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+
+// 初始化
+npx prisma migrate dev --name init
+npx prisma migrate dev --name add-post
+// 预览
+npx prisma studio
+
+
+TypeGraphQL Prisma
+
+https://prisma.typegraphql.com/
