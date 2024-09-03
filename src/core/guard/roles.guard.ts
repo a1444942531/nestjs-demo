@@ -13,11 +13,6 @@ export class RolesGuard implements CanActivate {
   async canActivate(
     context: ExecutionContext,
   ) {
-    const alice = GqlExecutionContext.create(context);
-    console.log(
-      "jiaoyan"
-    )
-
     const request = GqlExecutionContext.create(context).getContext().req;
 
     if (['/tokens', '/users'].includes(request.url)) {

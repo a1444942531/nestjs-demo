@@ -1,8 +1,7 @@
 import { UseGuards } from '@nestjs/common';
-import { Query, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { RolesGuard } from '../guard/roles.guard';
 import { UserService } from '../service/user.service';
-import { PrismaService } from '../service/prisma.service';
 import { User } from 'src/prisma-model-graphql/model/user.model';
 
 @Resolver()
@@ -10,23 +9,19 @@ import { User } from 'src/prisma-model-graphql/model/user.model';
 export class AppResolver {
     constructor(
         private userService: UserService,
-        private prisma: PrismaService
     ) { }
 
-    @Query(() => User)
+    @Query(() => Number)
     async hello() {
-        let man = await this.prisma.user.findMany()
-        man[0].createdTime
+        // let man = await this.prisma.user.findMany()
+        // man[0].createdTime
         return 123
     }
 
-    async getUser() {
-        let alice = await this.prisma.user.findUnique({
-            where: {
-                id: 1
-            }
+    @Query(() => User)
+    async getUser(@Args('id') id: number) {
+        return await this.userService.user({
+            id
         })
-
-        return alice
     }
 }

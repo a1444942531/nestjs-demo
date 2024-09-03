@@ -14,40 +14,49 @@ export class UserService {
         })
     }
 
-    async selectUserName() {
-        let pageNum = 1
-        let pageSize = 10
+    // async selectUserName() {
 
-        this.prisma.user.findMany({
-            // 分页功能
-            skip: (pageNum - 1) * pageSize,
-            take: pageSize,
-            where: {
-                username: {
-                    // equals 相等
-                    equals: "username",
-                    // not 不等于
-                    not: "username",
-                    // in 包含于
-                    in: ["username"],
-                    // notIn 不包含与
-                    notIn: ["username"],
-                    // lt 小于
-                    lt: "123",
-                    // lte 小于等于
-                    lte: "123",
-                    // gt 大于
-                    gt: "123",
-                    // 大于等于
-                    gte: "123",
+    //     const task = await this.prisma.task.create({
+    //         data: {
+    //             name: "hello world",
+    //             createById: 1,
+    //             status: "DOING"
+    //         }
+    //     })
 
-                }
-            },
-            orderBy: {
-                id: 'desc'
-            }
-        })
-    }
+    //     let pageNum = 1
+    //     let pageSize = 10
+
+    //     this.prisma.user.findMany({
+    //         // 分页功能
+    //         skip: (pageNum - 1) * pageSize,
+    //         take: pageSize,
+    //         where: {
+    //             username: {
+    //                 // equals 相等
+    //                 equals: "username",
+    //                 // not 不等于
+    //                 not: "username",
+    //                 // in 包含于
+    //                 in: ["username"],
+    //                 // notIn 不包含与
+    //                 notIn: ["username"],
+    //                 // lt 小于
+    //                 lt: "123",
+    //                 // lte 小于等于
+    //                 lte: "123",
+    //                 // gt 大于
+    //                 gt: "123",
+    //                 // 大于等于
+    //                 gte: "123",
+
+    //             }
+    //         },
+    //         orderBy: {
+    //             id: 'desc'
+    //         }
+    //     })
+    // }
 
     async findByUsername(username: string) {
         return await this.prisma.user.findUnique({

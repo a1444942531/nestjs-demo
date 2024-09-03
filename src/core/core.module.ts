@@ -1,8 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
-import { UserController } from './controller/user.controller';
-import { TokenController } from './controller/token.controller';
 import { UserService } from './service/user.service';
 import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
@@ -13,6 +11,9 @@ import { SECRET_KEY } from './constant/user.constant';
 import { PrismaService } from './service/prisma.service';
 import { AppResolver } from './resolver/app.resolver';
 import { RolesGuard } from './guard/roles.guard';
+import { TokenResolver } from './resolver/token.resolver';
+import { WxService } from './service/wx.service';
+import { ForwardController } from './controller/forward.controller';
 
 @Global()
 @Module({
@@ -34,8 +35,7 @@ import { RolesGuard } from './guard/roles.guard';
         })
     ],
     controllers: [
-        UserController,
-        TokenController
+        ForwardController
     ],
     providers: [
         UserService, {
@@ -43,10 +43,12 @@ import { RolesGuard } from './guard/roles.guard';
             useClass: ValidationPipe
         },
         RolesGuard,
-        AuthService, 
+        AuthService,
         PrismaService,
+        WxService,
         /** graphql */
-        AppResolver
+        AppResolver,
+        TokenResolver
     ],
     exports: []
 })
