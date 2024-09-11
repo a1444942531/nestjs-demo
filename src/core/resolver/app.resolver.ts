@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { RolesGuard } from '../guard/roles.guard';
 import { UserService } from '../service/user.service';
@@ -10,6 +10,8 @@ export class AppResolver {
     constructor(
         private userService: UserService,
     ) { }
+    
+    private readonly logger = new Logger(AppResolver.name)
 
     @Query(() => Number)
     async hello() {
@@ -20,6 +22,8 @@ export class AppResolver {
 
     @Query(() => User)
     async getUser(@Args('id') id: number) {
+        this.logger.log("upload -------------------")
+
         return await this.userService.user({
             id
         })

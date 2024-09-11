@@ -23,9 +23,9 @@ export class ForwardController {
   @Post("*")
   async to(@Req() req: Request, method: "GET" | "POST" = "POST", @Body() body?) {
     const authorization = req.headers.authorization
-    if (!authorization) {
-      throw new UnauthorizedException("未登录")
-    }
+    // if (!authorization) {
+    //   throw new UnauthorizedException("未登录")
+    // }
 
     const orgUrl = req.originalUrl.split("/")
     orgUrl.shift()

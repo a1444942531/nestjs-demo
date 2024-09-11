@@ -5,6 +5,7 @@ import * as bcrypt from 'bcryptjs'
 import { UserService } from '../service/user.service';
 import { User } from 'src/prisma-model-graphql/model/user.model';
 import { WxService } from '../service/wx.service';
+import { Logger } from '@nestjs/common';
 
 @InputType()
 class CreateUser extends TokenCreateDto { }
@@ -16,6 +17,7 @@ export class TokenResolver {
         private readonly userService: UserService,
         private readonly miniprogram: WxService
     ) { }
+
 
     @Mutation(() => String)
     createToken(@Args("tokenCreateDto") tokenCreateDto: TokenCreateDto) {

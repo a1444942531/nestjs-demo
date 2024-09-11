@@ -1,8 +1,8 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
 import { UserService } from './service/user.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 import { ValidationPipe } from './pipe/validation.pipe';
 import { JwtModule } from '@nestjs/jwt';
@@ -14,6 +14,8 @@ import { RolesGuard } from './guard/roles.guard';
 import { TokenResolver } from './resolver/token.resolver';
 import { WxService } from './service/wx.service';
 import { ForwardController } from './controller/forward.controller';
+import { CORRELATION_ID_HEADER, CorrelationIdMiddleware } from './middleware/correlation-id.middleware';
+import { LoggerService } from './service/logger.service';
 
 @Global()
 @Module({
@@ -32,7 +34,7 @@ import { ForwardController } from './controller/forward.controller';
             signOptions: {
                 expiresIn: '30000s'
             }
-        })
+        }),
     ],
     controllers: [
         ForwardController
@@ -48,8 +50,14 @@ import { ForwardController } from './controller/forward.controller';
         WxService,
         /** graphql */
         AppResolver,
-        TokenResolver
+        TokenResolver,
+        LoggerService
     ],
-    exports: []
+    exports: [
+    ]
 })
-export class CoreModule { };
+export class CoreModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(CorrelationIdMiddleware).forRoutes("*")
+    }
+};

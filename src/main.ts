@@ -1,9 +1,14 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { LoggerService } from './core/service/logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true
+  });
+  app.useLogger(app.get(LoggerService))
+
   const config = new DocumentBuilder()
     .setTitle("清单")
     .setDescription("API文档")
@@ -14,7 +19,7 @@ async function bootstrap() {
   SwaggerModule.setup('doc', app, document)
 
   await app.listen(3000);
-
+  
   console.log(
     "http://localhost:3000"
   )
