@@ -14,8 +14,9 @@ import { RolesGuard } from './guard/roles.guard';
 import { TokenResolver } from './resolver/token.resolver';
 import { WxService } from './service/wx.service';
 import { ForwardController } from './controller/forward.controller';
-import { CORRELATION_ID_HEADER, CorrelationIdMiddleware } from './middleware/correlation-id.middleware';
+import { CorrelationIdMiddleware } from './middleware/correlation-id.middleware';
 import { LoggerService } from './service/logger.service';
+import Redis from 'ioredis'
 
 @Global()
 @Module({
@@ -51,9 +52,18 @@ import { LoggerService } from './service/logger.service';
         /** graphql */
         AppResolver,
         TokenResolver,
-        LoggerService
+        LoggerService,
+        {
+            provide: "REDIS_CLIENT",
+            useFactory: (configService: ConfigService) => {
+                const redisURL = configService.get<string>("REDIS_URL")
+                return new Redis(redisURL)
+            },
+            inject: [ConfigService],  
+        }
     ],
     exports: [
+        "REDIS_CLIENT"
     ]
 })
 export class CoreModule implements NestModule {

@@ -1,4 +1,4 @@
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { LoggerService } from './core/service/logger.service';
@@ -7,7 +7,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true
   });
+  /** 日志 */
   app.useLogger(app.get(LoggerService))
+  /** Redis */
+  // app.connectMicroservice({})
+  /** 微服务 */
+  // @nestjs/microservices
 
   const config = new DocumentBuilder()
     .setTitle("清单")
