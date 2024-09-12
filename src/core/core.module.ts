@@ -56,10 +56,10 @@ import Redis from 'ioredis'
         {
             provide: "REDIS_CLIENT",
             useFactory: (configService: ConfigService) => {
-                const redisURL = configService.get<string>("REDIS_URL")
+                const redisURL = configService.get<string>("REDIS_URL")!
                 return new Redis(redisURL)
             },
-            inject: [ConfigService],  
+            inject: [ConfigService],
         }
     ],
     exports: [

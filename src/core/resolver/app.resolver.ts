@@ -1,4 +1,4 @@
-import { Inject, Logger, UseGuards } from '@nestjs/common';
+import { Inject, Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { RolesGuard } from '../guard/roles.guard';
 import { UserService } from '../service/user.service';
@@ -25,17 +25,21 @@ export class AppResolver {
 
     @Query(() => Number)
     async hello() {
-        // let man = await this.prisma.user.findMany()
-        // man[0].createdTime
         return 123
     }
 
     @Query(() => User)
-    async getUser(@Args('id') id: number) {
+    async getUser(@Args('id') id: number): Promise<User> {
         this.logger.log("upload -------------------")
 
-        return await this.userService.user({
+        const findUser = await this.userService.user({
             id
         })
+
+        if (!findUser) {
+            throw new UnauthorizedException("用户不存在")
+        }
+
+        return findUser
     }
 }
